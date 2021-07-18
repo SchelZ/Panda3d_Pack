@@ -8,7 +8,7 @@ from direct.gui.DirectGui import *
 from direct.stdpy import threading
 from direct.interval.IntervalGlobal import Sequence, Func, Wait
 
-class DetectCollision(ShowBase):
+class ModelTexture(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
         self.RelativPath	  = Filename.fromOsSpecific(os.path.abspath(sys.path[0])).getFullpath()     ## Relative Location  
@@ -23,4 +23,4 @@ class DetectCollision(ShowBase):
         self.WallObj.setTexScale(self.ts, 3, 4)
         self.WallObj.setTexHpr(self.ts, 90, 0, 0)
    
-DetectCollision().run()
+ModelTexture().run()
