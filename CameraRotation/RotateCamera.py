@@ -2,6 +2,8 @@
 
 ## How Game Rotation Axis Works?:     https://math.stackexchange.com/questions/3171374/3d-axis-rotation-new-value
 
+## First Publicated here:             https://discourse.panda3d.org/t/rotate-camera-based-on-mouse-position/1237/16
+
 import sys, os
 import ctypes
 from panda3d.core import *
