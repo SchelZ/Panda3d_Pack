@@ -13,9 +13,9 @@ from direct.task import Task
 class CameraRotation3D(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
-        self.RelativPath	   = Filename.fromOsSpecific(os.path.abspath(sys.path[0])).getFullpath()
+        self.RelativPath	  = Filename.fromOsSpecific(os.path.abspath(sys.path[0])).getFullpath()
         self.props             = base.win.getProperties()
-        self.WindowProps	   = WindowProperties()
+        self.WindowProps	  = WindowProperties()
         self.GetLocalPID       = os.getpid()
         self.SceneMap          = self.loader.loadModel("models/environment")
         self.CameraJoint       = self.loader.loadModel(self.RelativPath + "/CameraJoint.egg")
