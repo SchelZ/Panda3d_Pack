@@ -6,9 +6,9 @@ from direct.task import Task
 class ModelTexture(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
-        self.RelativPath	  = Filename.fromOsSpecific(os.path.abspath(sys.path[0])).getFullpath()     ## Relative Location  
-        self.WallObj          = self.loader.loadModel(self.RelativPath + '/BasicWall.egg')              ## Model Object
-        self.Texture1         = self.loader.loadTexture(self.RelativPath + '/BrickTexture.jpg')               ## Texture File
+        self.RelativPath	    = Filename.fromOsSpecific(os.path.abspath(sys.path[0])).getFullpath()     ## Relative Location  
+        self.WallObj          = self.loader.loadModel(self.RelativPath + '/BasicWall.egg')                ## Model Object
+        self.Texture1         = self.loader.loadTexture(self.RelativPath + '/BrickTexture.jpg')           ## Texture File
         self.ts               = TextureStage('ts')                                      
 
         self.WallObj.setPos(0, 25, 0)
