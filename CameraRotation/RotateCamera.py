@@ -4,21 +4,20 @@
 
 ## First Publicated here:             https://discourse.panda3d.org/t/rotate-camera-based-on-mouse-position/1237/16
 
-import sys, os
-import ctypes
-from panda3d.core import *
-from direct.showbase.ShowBase import ShowBase, Loader
+import ctypes, os
+from panda3d.core import WindowProperties
+from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
 
-class CameraRotation3D(ShowBase):
+
+class CursorRotate(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
-        self.RelativPath	  = Filename.fromOsSpecific(os.path.abspath(sys.path[0])).getFullpath()
+
         self.props             = base.win.getProperties()
-        self.WindowProps	  = WindowProperties()
+        self.WindowProps	   = WindowProperties()
         self.GetLocalPID       = os.getpid()
         self.SceneMap          = self.loader.loadModel("models/environment")
-        self.CameraJoint       = self.loader.loadModel(self.RelativPath + "/CameraJoint.egg")
 
         self.CameraFOV         = 70
         self.RotationSpeed     = 0.5
@@ -34,15 +33,9 @@ class CameraRotation3D(ShowBase):
         self.SceneMap.setPos(-8, 42, 0)
         self.SceneMap.reparentTo(self.render)
 
-        self.CameraJoint.setScale(0.25, 0.25, 0.25)
-        self.CameraJoint.setPos(0, 0, 5)
-        self.CameraJoint.reparentTo(self.render)
-        self.camera.reparentTo(self.CameraJoint)
-
         base.camLens.setFov(self.CameraFOV)
-        base.setBackgroundColor(0, 0, 0)
-
         self.taskMgr.add(self.FallowCursor, "FallowRotation")
+
 
     def WindowProp(self, task):
         self.WindowProps.setCursorHidden(True)
@@ -72,7 +65,8 @@ class CameraRotation3D(ShowBase):
         else:
             self.WindowProps.setCursorHidden(False)
             base.win.requestProperties(self.WindowProps)
-        self.CameraJoint.setHpr(-self.MouseX, self.MouseY, 0)
+        self.camera.setHpr(-self.MouseX, self.MouseY, 0)
         return Task.cont
 
-CameraRotation3D().run()
+if __name__ == "__main__":
+    CursorRotate().run()
