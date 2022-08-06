@@ -4,16 +4,16 @@
 
 ## First Publicated here:             https://discourse.panda3d.org/t/rotate-camera-based-on-mouse-position/1237/16
 
-import ctypes, os
+import ctypes, os, pyautogui
 from panda3d.core import WindowProperties
 from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
 
-
 class CursorRotate(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
-
+        
+        self.DisplayResolution = pyautogui.size()
         self.props             = base.win.getProperties()
         self.WindowProps	   = WindowProperties()
         self.GetLocalPID       = os.getpid()
@@ -34,13 +34,24 @@ class CursorRotate(ShowBase):
         self.SceneMap.reparentTo(self.render)
 
         base.camLens.setFov(self.CameraFOV)
+        self.taskMgr.add(self.UpdateResolution, "NewResolution")
         self.taskMgr.add(self.FallowCursor, "FallowRotation")
-
 
     def WindowProp(self, task):
         self.WindowProps.setCursorHidden(True)
         base.win.requestProperties(self.WindowProps)
         return Task.done
+
+    def UpdateResolution(self, task):
+        self.WindowProps	   = WindowProperties()
+        self.props             = self.win.getProperties()
+        rawResolution = self.DisplayResolution[1] - self.win.getYSize()
+        if self.DisplayResolution[0] == self.win.getXSize() and self.DisplayResolution[1]-rawResolution == self.win.getYSize() or self.DisplayResolution[0] == self.win.getXSize() and self.DisplayResolution[1] == self.win.getYSize():
+            self.CameraFOV = 100
+        else:
+            self.CameraFOV = 70
+        self.camLens.setFov(self.CameraFOV)
+        return Task.cont
 
     def FallowCursor(self, task):
         hwnd = ctypes.windll.user32.GetForegroundWindow()
@@ -60,10 +71,10 @@ class CursorRotate(ShowBase):
                 pass
             self.MouseX    += self.MouseMove[0] * self.RotationSpeed                                    ## Smooth roll rotation
             self.MouseY    += self.MouseMove[1] * self.RotationSpeed                                    ## Smooth pitch rotation
-            if self.MouseY > 90: self.MouseY = 90                       ## Clip The pitch for +90
-            elif self.MouseY < -90: self.MouseY = -90                   ## Clip the pitch for -90
+            if self.MouseY > 90: self.MouseY = 90
+            elif self.MouseY < -90: self.MouseY = -90
         else:
-            self.WindowProps.setCursorHidden(False)         ## if not in game reveal the cursor
+            self.WindowProps.setCursorHidden(False)
             base.win.requestProperties(self.WindowProps)
         self.camera.setHpr(-self.MouseX, self.MouseY, 0)
         return Task.cont
