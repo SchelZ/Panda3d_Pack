@@ -19,6 +19,8 @@ class CursorRotate(ShowBase):
         self.GetLocalPID       = os.getpid()
         self.SceneMap          = self.loader.loadModel("models/environment")
 
+        self.tempStore         = self.DisplayResolution
+        self.InGame            = False
         self.CameraFOV         = 70
         self.RotationSpeed     = 0.5
         self.MouseMove         = [0, 0]
@@ -34,48 +36,43 @@ class CursorRotate(ShowBase):
         self.SceneMap.reparentTo(self.render)
 
         base.camLens.setFov(self.CameraFOV)
-        self.taskMgr.add(self.UpdateResolution, "NewResolution")
         self.taskMgr.add(self.FallowCursor, "FallowRotation")
 
-    def WindowProp(self, task):
-        self.WindowProps.setCursorHidden(True)
+    def WindowProp(self, task, value):
+        self.WindowProps.setCursorHidden(value)
         base.win.requestProperties(self.WindowProps)
         return Task.done
 
-    def UpdateResolution(self, task):
+    def FallowCursor(self, task):
         self.WindowProps	   = WindowProperties()
         self.props             = self.win.getProperties()
-        rawResolution = self.DisplayResolution[1] - self.win.getYSize()
-        if self.DisplayResolution[0] == self.win.getXSize() and self.DisplayResolution[1]-rawResolution == self.win.getYSize() or self.DisplayResolution[0] == self.win.getXSize() and self.DisplayResolution[1] == self.win.getYSize():
-            self.CameraFOV = 100
-        else:
-            self.CameraFOV = 70
-        self.camLens.setFov(self.CameraFOV)
-        return Task.cont
-
-    def FallowCursor(self, task):
         hwnd = ctypes.windll.user32.GetForegroundWindow()
         lpdw_process_id = ctypes.c_ulong()
         result = ctypes.windll.user32.GetWindowThreadProcessId(hwnd, ctypes.byref(lpdw_process_id))
         process_id = lpdw_process_id.value
+
         if base.mouseWatcherNode.hasMouse():
             self.Cursor2D_X = base.mouseWatcherNode.getMouseX()             ## Mouse X position
             self.Cursor2D_Y = base.mouseWatcherNode.getMouseY()             ## Mouse Y position
-
+            
         if process_id == self.GetLocalPID:
-            self.taskMgr.add(self.WindowProp, "BackToGame")                 ## Return hidden cursor
+            if self.InGame:
+                self.taskMgr.add(self.WindowProp, "BackToGame", extraArgs=[True], appendTask=True)                 ## Return hidden cursor
+                self.InGame = False
             try:
                 base.win.movePointer(0, self.props.getXSize() // 2, self.props.getYSize() // 2)         ## Center cursor
-                self.MouseMove = [int(self.Cursor2D_X*100), int(self.Cursor2D_Y*100)]                   ## Amplificate movement
+                self.MouseMove = (int(self.Cursor2D_X*100), int(self.Cursor2D_Y*100))                   ## Amplificate movement
             except:
                 pass
-            self.MouseX    += self.MouseMove[0] * self.RotationSpeed                                   ## Smooth roll rotation
+            self.MouseX    += self.MouseMove[0] * self.RotationSpeed                                    ## Smooth roll rotation
             self.MouseY    += self.MouseMove[1] * self.RotationSpeed                                    ## Smooth pitch rotation
             if self.MouseY > 90: self.MouseY = 90
             elif self.MouseY < -90: self.MouseY = -90
-        else:
-            self.WindowProps.setCursorHidden(False)
-            base.win.requestProperties(self.WindowProps)
+        else:                
+            if not self.InGame:
+                self.taskMgr.add(self.WindowProp, "BackToGame", extraArgs=[False], appendTask=True)                 ## Return hidden cursor
+                self.InGame = True
+
         self.camera.setHpr(-self.MouseX, self.MouseY, 0)
         return Task.cont
 
