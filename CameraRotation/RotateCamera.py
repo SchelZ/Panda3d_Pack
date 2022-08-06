@@ -60,10 +60,10 @@ class CursorRotate(ShowBase):
                 pass
             self.MouseX    += self.MouseMove[0] * self.RotationSpeed                                    ## Smooth roll rotation
             self.MouseY    += self.MouseMove[1] * self.RotationSpeed                                    ## Smooth pitch rotation
-            if self.MouseY > 90: self.MouseY = 90
-            elif self.MouseY < -90: self.MouseY = -90
+            if self.MouseY > 90: self.MouseY = 90                       ## Clip The pitch for +90
+            elif self.MouseY < -90: self.MouseY = -90                   ## Clip the pitch for -90
         else:
-            self.WindowProps.setCursorHidden(False)
+            self.WindowProps.setCursorHidden(False)         ## if not in game reveal the cursor
             base.win.requestProperties(self.WindowProps)
         self.camera.setHpr(-self.MouseX, self.MouseY, 0)
         return Task.cont
