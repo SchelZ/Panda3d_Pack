@@ -69,7 +69,7 @@ class CursorRotate(ShowBase):
                 self.MouseMove = [int(self.Cursor2D_X*100), int(self.Cursor2D_Y*100)]                   ## Amplificate movement
             except:
                 pass
-            self.MouseX    += self.MouseMove[0] * self.RotationSpeed                                    ## Smooth roll rotation
+            self.MouseX    += self.MouseMove[0] * self.RotationSpeed                                   ## Smooth roll rotation
             self.MouseY    += self.MouseMove[1] * self.RotationSpeed                                    ## Smooth pitch rotation
             if self.MouseY > 90: self.MouseY = 90
             elif self.MouseY < -90: self.MouseY = -90
